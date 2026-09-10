@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -154,3 +155,22 @@ def test_is_fail_open_when_sdk_operations_raise() -> None:
             pass
         with trace.llm_span("answer") as llm_span:
             llm_span.complete(output={"answer": "application continues"})
+
+
+def test_observer_creates_opik_client_with_batching_false() -> None:
+    """Verify that the observer constructs Opik with batching=False.
+
+    This test proves the observer configuration prevents trace defects
+    that occur with short-lived spans when batching is enabled.
+    """
+    mock_opik_class = MagicMock()
+    mock_client = MagicMock()
+    mock_opik_class.return_value = mock_client
+
+    with patch("app.observability.opik_observer.Opik", mock_opik_class):
+        # Force _create_client to run by not providing a client
+        observer = OpikObserver()
+
+    # Assert Opik was called exactly once with batching=False
+    mock_opik_class.assert_called_once_with(batching=False)
+    assert observer._client is mock_client
