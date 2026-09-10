@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "llm-evaluation-observability"
+version = "0.1.0"
+description = "A vendor-conscious reference implementation for LLM observability and evaluation with Opik"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+opik = ["opik>=2.2.56,<3"]
+dev = [
+    "opik>=2.2.56,<3",
+    "pytest>=8.0,<10",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app", "evaluation"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+markers = [
+    "integration: requires a reachable local Opik instance",
+]
