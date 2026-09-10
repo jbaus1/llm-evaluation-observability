@@ -128,3 +128,17 @@ python examples/benchmark_summary.py
 ```
 
 See [the benchmark design](docs/benchmark-design.md) for each case's purpose, expected results, and known metric limitations.
+
+## Semantic groundedness
+
+The isolated semantic evaluator uses an injected LLM judge to determine whether referenced evidence actually supports a claim. It complements rather than changes deterministic `evidence_attribution`, and it has no Opik dependency or feedback-publication behavior.
+
+Judge responses are validated as structured JSON with a support flag, score, short reason, and one of five classifications: fully supported, partially supported, unsupported, contradicted, or insufficient. Mock mode demonstrates the calibrated boundary without a live model:
+
+```bash
+python examples/run_semantic_evaluation.py
+```
+
+CASE-005 retains deterministic attribution `1.00` while its unsupported ventilation claim receives a low semantic score. CASE-008 retains attribution `1.00` while the judge reports ambiguity from conflicting observations. Exact real-model scores are not fixed and require calibration against human judgments before operational use.
+
+No model provider is configured by this project. The optional real-model contract test runs only when `SEMANTIC_JUDGE_COMMAND` names an explicitly configured command that reads the judge prompt from stdin and writes structured JSON to stdout.

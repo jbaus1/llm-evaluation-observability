@@ -83,6 +83,22 @@ python examples/publish_case_evaluation.py
 - Duplicate or inconsistent source records are not validated in v0.1.
 - The fixture is intentionally small and synthetic; it does not establish production thresholds.
 
-## Future metrics
+## Semantic groundedness
 
-A later milestone may add LLM-as-judge metrics for semantic groundedness, claim correctness, completeness, and revision quality. Those evaluators should be calibrated against deterministic baselines, version their prompts and models, expose uncertainty, and remain separate from this pure engine.
+`semantic_groundedness` is intentionally separate from the deterministic engine. It asks an injected LLM judge whether a claim is actually supported by its referenced evidence. It does not change `evidence_attribution`, connect to Opik, or publish feedback scores.
+
+The judge must return JSON with `supported`, a score from 0.0 to 1.0, a short reason, and one rubric classification:
+
+- `fully_supported`: all material parts follow from the evidence.
+- `partially_supported`: some material parts follow, but at least one does not.
+- `unsupported`: the evidence neither establishes nor directly refutes the claim.
+- `contradicted`: the evidence directly conflicts with the claim.
+- `insufficient`: evidence is absent, limited, or internally conflicting.
+
+Structured output makes classifications testable and rejects malformed or internally inconsistent responses. It does not make the judge deterministic. Scores and borderline classifications may vary by model, model version, prompt interpretation, and provider behavior.
+
+CASE-005 is the primary calibration case. Its ventilation-failure claim cites a valid humidity record, so deterministic attribution is 1.00. A semantic judge should classify the claim as unsupported or otherwise not supported, with a low score rather than a fixed expected value. The mock calibration returns `unsupported` at 0.10; a real judge is expected to remain in the unsupported range from 0.0 through 0.4.
+
+CASE-008 is the conflict calibration case. Its incompatible green and red observations are passed to the judge without automatic resolution. The mock calibration returns `insufficient` at 0.25. A real judge may describe the situation as insufficient or conflicting, but should expose the ambiguity rather than select one observation without justification.
+
+Judge calibration against human-labeled claims is required before scores can support production thresholds. Future work should measure agreement, repeatability, sensitivity to prompt/model versions, and treatment of partial support and contradiction. Claim correctness, completeness, and revision quality remain separate future metrics.

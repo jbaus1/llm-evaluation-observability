@@ -31,7 +31,7 @@ The claim is not semantically supported by that evidence. Therefore:
 evidence_attribution != semantic groundedness
 ```
 
-This is intentional and provides a concrete justification for a future semantic evaluator. No semantic matching logic belongs in the current deterministic metric.
+This is intentional and provides the primary calibration case for `semantic_groundedness`. In mock calibration the semantic judge classifies the claim as `unsupported` while deterministic attribution remains 1.00. Real-judge scores are expected to remain low but are not fixed because LLM judgments are nondeterministic. No semantic matching logic belongs in the deterministic metric.
 
 ## REVISE behavior
 
@@ -39,7 +39,7 @@ CASE-007 includes a generated `REVISE` disposition and a final human `REVISE` de
 
 ## Conflicting and sparse evidence
 
-CASE-008 records two incompatible observations about the same indicator and preserves both references. The deterministic metrics can verify representation, references, and disposition agreement, but they cannot resolve the conflict.
+CASE-008 records two incompatible observations about the same indicator and preserves both references. The deterministic metrics can verify representation, references, and disposition agreement, but they cannot resolve the conflict. The semantic calibration passes all cited observations to the judge and expects an ambiguity such as `insufficient`; it does not choose a winning source.
 
 CASE-009 provides one evidence record for four required facts. It intentionally demonstrates incomplete coverage, partial attribution, and review disagreement caused by an underspecified record set.
 
