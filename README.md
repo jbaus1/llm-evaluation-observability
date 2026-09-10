@@ -85,3 +85,16 @@ OPIK_ENABLED=true OPIK_CAPTURE_LLM_IO=true pytest -m integration
 ```
 
 The integration test is skipped by default. Unit tests use a recording fake and do not require Opik.
+
+## Deterministic evaluation
+
+The vendor-neutral evaluation engine scores structured cases on fact coverage, evidence attribution, and human alignment. It is pure Python, deterministic, and independent of Opik or external model APIs.
+
+```python
+from evaluation.cases import CASE_001
+from evaluation.evaluate import evaluate_case
+
+results = evaluate_case(CASE_001)
+```
+
+CASE-001 produces exact scores of `0.80` for fact coverage, `0.50` for evidence attribution, and `0.60` for human alignment. See [the evaluation strategy](docs/evaluation-strategy.md) for formulas, exclusions, and known limitations.
