@@ -110,3 +110,21 @@ python examples/publish_case_evaluation.py
 ```
 
 The application trace receives `fact_coverage=0.80`, `evidence_attribution=0.50`, and `human_alignment=0.60`. The values come directly from `evaluate_case(CASE_001)`, not from constants in the publisher. Publication returns an explicit status and preserves the original evaluation results if Opik fails.
+
+## Synthetic benchmark
+
+The controlled benchmark expands CASE-001 into ten public-safe cases covering positive controls, missing facts, invalid citations, structurally attributed but unsupported claims, human rejection and revision, conflicting evidence, and sparse evidence. Every expected numerator, denominator, and score is checked against the unchanged deterministic engine.
+
+```python
+from evaluation.benchmark import CASES, get_case
+
+positive_control = get_case("CASE-010")
+```
+
+Print the engine-computed score table with:
+
+```bash
+python examples/benchmark_summary.py
+```
+
+See [the benchmark design](docs/benchmark-design.md) for each case's purpose, expected results, and known metric limitations.
