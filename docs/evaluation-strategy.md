@@ -52,6 +52,28 @@ The reusable synthetic fixture has five required facts and four represented fact
 | `evidence_attribution` | 2 | 4 | 0.50 |
 | `human_alignment` | 3 | 5 | 0.60 |
 
+## Publishing results
+
+Metric computation and result publication are separate operations:
+
+```text
+EvaluationCase
+	-> evaluate_case()
+	-> EvaluationResult[]
+	-> Opik evaluation adapter
+	-> trace feedback scores
+```
+
+The `evaluation` package remains vendor-neutral. It does not import Opik, read environment configuration, or perform network calls. The adapter in `app/observability/opik_evaluation.py` maps each result's `metric_name` to an Opik feedback-score name, `score` to its value, and `reason` to the supported reason field.
+
+Opik is the current evaluation-results backend, not the metric engine. Publication failures return an explicit unsuccessful status containing the original `EvaluationResult` objects. They do not discard results, rerun evaluation, or report success. Retries and alternate publication backends are intentionally outside this milestone.
+
+The complete local example is:
+
+```bash
+python examples/publish_case_evaluation.py
+```
+
 ## Known limitations
 
 - Fact IDs and evidence IDs must be assigned before evaluation.
@@ -63,4 +85,4 @@ The reusable synthetic fixture has five required facts and four represented fact
 
 ## Future metrics
 
-A later milestone may add LLM-as-judge metrics for semantic groundedness, claim correctness, completeness, and revision quality. Those evaluators should be calibrated against deterministic baselines, version their prompts and models, expose uncertainty, and remain separate from this pure engine. This milestone does not send evaluation results to Opik.
+A later milestone may add LLM-as-judge metrics for semantic groundedness, claim correctness, completeness, and revision quality. Those evaluators should be calibrated against deterministic baselines, version their prompts and models, expose uncertainty, and remain separate from this pure engine.

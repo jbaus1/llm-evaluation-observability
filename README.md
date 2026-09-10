@@ -2,7 +2,7 @@
 
 A small, public reference implementation for production-oriented LLM observability and evaluation with [Opik](https://www.comet.com/docs/opik/). The project is intentionally vendor-conscious: application code depends on a narrow observer boundary, while Opik remains an optional integration.
 
-This foundation contains tracing only. It does not include an application workflow, API, UI, database, RAG pipeline, evaluators, experiments, authentication, or deployment configuration.
+This reference now contains tracing, deterministic evaluation, and isolated feedback-score publication. It does not include an API, UI, database, RAG pipeline, LLM-as-judge evaluators, experiments, authentication, or deployment configuration.
 
 ## Setup
 
@@ -98,3 +98,15 @@ results = evaluate_case(CASE_001)
 ```
 
 CASE-001 produces exact scores of `0.80` for fact coverage, `0.50` for evidence attribution, and `0.60` for human alignment. See [the evaluation strategy](docs/evaluation-strategy.md) for formulas, exclusions, and known limitations.
+
+## Evaluation publication
+
+Opik is the current backend for publishing deterministic results as trace feedback scores. Publication is isolated in `app/observability/opik_evaluation.py`; the evaluation engine itself does not depend on or import Opik.
+
+With local Opik configured, run the complete trace, evaluation, and publication flow:
+
+```bash
+python examples/publish_case_evaluation.py
+```
+
+The application trace receives `fact_coverage=0.80`, `evidence_attribution=0.50`, and `human_alignment=0.60`. The values come directly from `evaluate_case(CASE_001)`, not from constants in the publisher. Publication returns an explicit status and preserves the original evaluation results if Opik fails.
