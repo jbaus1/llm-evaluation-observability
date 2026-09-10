@@ -38,7 +38,9 @@ flowchart TD
 
 Trace and span handles are context managers. Completion metadata is merged with metadata supplied at creation before it is sent to Opik. LLM-specific `operation` and `prompt_version` values are stored as span metadata because the current Opik child-span API has no dedicated parameters for them. Model, provider, token usage, input, and output use native span fields.
 
-LLM payload capture is controlled by `OPIK_CAPTURE_LLM_IO` and defaults to `true`. Set it to `false` to omit LLM input and output while preserving operational metadata and token counts. The observer reads only this named boolean setting; it never enumerates or logs environment variables.
+LLM payload capture is controlled by `OPIK_CAPTURE_LLM_IO`. The observer defaults to capture for backward compatibility, while the runnable example defaults to the safer opt-in behavior. Set it to `true` for the example to record its synthetic input and output. Operational metadata and token counts are retained when capture is disabled. The observer reads only this named boolean setting; it never enumerates or logs environment variables.
+
+See [the quickstart](docs/quickstart.md) for the synthetic end-to-end investigation.
 
 ## Minimal example
 
@@ -79,7 +81,7 @@ Investigation trace
 Start Opik locally, configure `OPIK_URL_OVERRIDE` if needed, and explicitly opt in:
 
 ```bash
-OPIK_RUN_INTEGRATION_TESTS=true pytest -m integration
+OPIK_ENABLED=true OPIK_CAPTURE_LLM_IO=true pytest -m integration
 ```
 
 The integration test is skipped by default. Unit tests use a recording fake and do not require Opik.
