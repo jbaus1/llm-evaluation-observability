@@ -41,7 +41,7 @@ class OpikObserver:
         try:
             from opik import Opik
 
-            return Opik()
+            return Opik(batching=False)
         except Exception:
             return None
 
